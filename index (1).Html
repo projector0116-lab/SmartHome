@@ -1,0 +1,3355 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+<title>Smart Dashboard</title>
+
+<style>
+*,
+*::before,
+*::after{
+    box-sizing:border-box;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    background:#050505;
+    color:#fff;
+    font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Noto Sans JP",Arial,sans-serif;
+}
+
+body{
+    user-select:none;
+    -webkit-user-select:none;
+}
+
+/* ================================
+   40 : 60
+================================ */
+
+.app{
+    width:100vw;
+    height:100vh;
+    display:flex;
+    flex-direction:row;
+    overflow:hidden;
+}
+
+/* ================================
+   LEFT 40%
+================================ */
+
+.left-panel{
+    position:relative;
+
+    width:40%;
+    min-width:0;
+    max-width:40%;
+    flex:0 0 40%;
+
+    height:100%;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    padding:4vh 3vw;
+
+    overflow:hidden;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #151515 0%,
+            #090909 55%,
+            #030303 100%
+        );
+}
+
+.clock{
+    width:100%;
+    max-width:100%;
+
+    text-align:center;
+
+    font-size:clamp(28px,6vw,92px);
+    font-weight:800;
+
+    line-height:1.05;
+    letter-spacing:.025em;
+
+    white-space:nowrap;
+    overflow:hidden;
+
+    font-variant-numeric:tabular-nums;
+}
+
+.date{
+    width:100%;
+    max-width:100%;
+
+    margin-top:2vh;
+
+    text-align:center;
+
+    font-size:clamp(14px,2vw,28px);
+    font-weight:500;
+
+    color:#aaa;
+
+    white-space:normal;
+    overflow-wrap:break-word;
+    word-break:break-all;
+}
+
+.location{
+    width:100%;
+    max-width:100%;
+
+    margin-top:1.5vh;
+
+    text-align:center;
+
+    font-size:clamp(13px,1.7vw,24px);
+    font-weight:600;
+
+    color:#ddd;
+
+    white-space:normal;
+    overflow-wrap:break-word;
+    word-break:break-all;
+}
+
+/* ================================
+   RIGHT 60%
+================================ */
+
+.right-panel{
+    position:relative;
+
+    width:60%;
+    min-width:0;
+    max-width:60%;
+    flex:0 0 60%;
+
+    height:100%;
+
+    padding:14px;
+
+    overflow:hidden;
+
+    background:#050505;
+}
+
+/* ================================
+   EARTHQUAKE
+================================ */
+
+.earthquake-alert{
+    position:absolute;
+
+    top:8px;
+    left:14px;
+    right:14px;
+
+    z-index:1000;
+
+    display:none;
+
+    padding:12px 16px;
+
+    border-radius:14px;
+
+    background:#d40000;
+
+    color:#fff;
+
+    font-size:clamp(13px,1.5vw,22px);
+    font-weight:800;
+
+    text-align:center;
+
+    box-shadow:0 0 20px rgba(255,0,0,.45);
+
+    white-space:normal;
+    overflow-wrap:break-word;
+    word-break:break-all;
+}
+
+.earthquake-alert.show{
+    display:block;
+}
+
+/* ================================
+   COMMON PANEL
+================================ */
+
+.common-panel{
+    position:relative;
+
+    width:100%;
+    height:100%;
+
+    min-width:0;
+    min-height:0;
+
+    overflow:hidden;
+
+    border-radius:24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #181818,
+            #0b0b0b
+        );
+
+    border:1px solid #252525;
+
+    box-shadow:0 12px 50px rgba(0,0,0,.5);
+}
+
+/* ================================
+   VERTICAL TRACK
+================================ */
+
+.vertical-track{
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:200%;
+
+    display:flex;
+    flex-direction:column;
+
+    min-width:0;
+    min-height:0;
+
+    transform:translate3d(0,0,0);
+
+    transition:
+        transform .45s cubic-bezier(.22,.61,.36,1);
+
+    will-change:transform;
+}
+
+.screen{
+    position:relative;
+
+    width:100%;
+    height:50%;
+
+    min-width:0;
+    min-height:0;
+
+    flex:0 0 50%;
+
+    overflow:hidden;
+
+    box-sizing:border-box;
+}
+
+/* ================================
+   NEWS SCREEN
+================================ */
+
+.news-screen{
+    display:flex;
+    flex-direction:column;
+
+    padding:clamp(18px,3vw,42px);
+
+    min-width:0;
+    min-height:0;
+}
+
+.section-title{
+    flex:0 0 auto;
+
+    width:100%;
+    max-width:100%;
+
+    margin:0 0 18px 0;
+
+    font-size:clamp(15px,1.8vw,27px);
+    font-weight:800;
+
+    color:#999;
+
+    white-space:normal;
+    word-break:break-all;
+    overflow-wrap:break-word;
+
+    overflow:hidden;
+}
+
+/* ================================
+   NEWS CAROUSEL
+================================ */
+
+.news-carousel{
+    position:relative;
+
+    width:100%;
+    max-width:100%;
+
+    min-width:0;
+    min-height:0;
+
+    flex:1 1 auto;
+
+    overflow:hidden;
+
+    border-radius:18px;
+
+    background:#111;
+}
+
+/* ================================
+   NEWS TRACK
+================================ */
+
+.news-track{
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    height:100%;
+
+    display:flex;
+    flex-direction:row;
+
+    min-width:0;
+    min-height:0;
+
+    transform:translate3d(0,0,0);
+
+    transition:
+        transform .45s cubic-bezier(.22,.61,.36,1);
+
+    will-change:transform;
+}
+
+/* ================================
+   NEWS CARD
+================================ */
+
+.news-card{
+    position:relative;
+
+    height:100%;
+
+    min-height:0;
+
+    flex-shrink:0;
+
+    display:flex;
+    flex-direction:column;
+
+    padding:clamp(18px,2.5vw,34px);
+
+    box-sizing:border-box;
+
+    overflow:hidden;
+
+    background:
+        linear-gradient(
+            145deg,
+            #181818,
+            #101010
+        );
+}
+
+/*
+   ★重要
+   画像・タイトル・本文を
+   通常のFlex縦並びにする。
+   absolute配置は使用しない。
+*/
+
+.news-image-wrap{
+    position:relative;
+
+    width:100%;
+    max-width:100%;
+
+    /*
+      画像が存在する場合だけ
+      JSがdisplay:flexにする
+    */
+    display:flex;
+
+    flex:0 0 auto;
+
+    height:clamp(100px,20vh,220px);
+
+    margin:0 0 clamp(14px,2vw,24px) 0;
+
+    overflow:hidden;
+
+    border-radius:16px;
+
+    background:#181818;
+}
+
+/*
+   画像なしの場合
+   枠そのものを完全消去
+*/
+
+.news-image-wrap.image-hidden{
+    display:none !important;
+
+    width:0 !important;
+    height:0 !important;
+
+    min-height:0 !important;
+
+    margin:0 !important;
+    padding:0 !important;
+
+    overflow:hidden !important;
+}
+
+.news-image{
+    display:block;
+
+    width:100%;
+    max-width:100%;
+
+    height:100%;
+    max-height:100%;
+
+    flex:1 1 auto;
+
+    object-fit:cover;
+
+    object-position:center;
+
+    border-radius:16px;
+
+    box-sizing:border-box;
+}
+
+/* ================================
+   NEWS TEXT AREA
+================================ */
+
+/*
+   画像とは完全に別のFlex領域。
+*/
+
+.news-text-area{
+    width:100%;
+    max-width:100%;
+
+    min-width:0;
+    min-height:0;
+
+    flex:1 1 auto;
+
+    display:flex;
+    flex-direction:column;
+
+    overflow:hidden;
+}
+
+/* ================================
+   TITLE
+================================ */
+
+.news-title{
+    width:100%;
+    max-width:100%;
+
+    margin:0 0 16px 0;
+
+    flex:0 0 auto;
+
+    font-size:clamp(19px,2.5vw,38px);
+
+    font-weight:800;
+
+    line-height:1.35;
+
+    color:#fff;
+
+    white-space:normal;
+    word-break:break-all;
+    overflow-wrap:break-word;
+
+    overflow:hidden;
+
+    box-sizing:border-box;
+}
+
+/* ================================
+   DESCRIPTION
+================================ */
+
+.news-description{
+    width:100%;
+    max-width:100%;
+
+    margin:0;
+
+    flex:1 1 auto;
+
+    min-width:0;
+    min-height:0;
+
+    font-size:clamp(13px,1.5vw,22px);
+
+    line-height:1.65;
+
+    color:#c8c8c8;
+
+    white-space:normal;
+    word-break:break-all;
+    overflow-wrap:break-word;
+
+    /*
+      テキスト領域内だけを使う。
+      画像領域には絶対に入り込まない。
+    */
+
+    overflow:auto;
+
+    box-sizing:border-box;
+}
+
+.news-description::-webkit-scrollbar{
+    display:none;
+}
+
+/* ================================
+   NEWS DATE
+================================ */
+
+.news-date{
+    width:100%;
+    max-width:100%;
+
+    margin-top:14px;
+
+    flex:0 0 auto;
+
+    font-size:clamp(10px,1.1vw,16px);
+
+    color:#777;
+
+    white-space:normal;
+    word-break:break-all;
+    overflow-wrap:break-word;
+
+    overflow:hidden;
+}
+
+/* ================================
+   COUNTER
+================================ */
+
+.news-counter{
+    position:absolute;
+
+    right:clamp(14px,2vw,28px);
+    bottom:clamp(12px,2vw,24px);
+
+    z-index:10;
+
+    max-width:calc(100% - 28px);
+
+    padding:6px 10px;
+
+    border-radius:999px;
+
+    background:rgba(255,255,255,.08);
+
+    color:#999;
+
+    font-size:clamp(10px,1vw,15px);
+
+    white-space:nowrap;
+
+    overflow:hidden;
+}
+
+/* ================================
+   WEATHER
+================================ */
+
+.weather-screen{
+    position:relative;
+
+    overflow:hidden;
+
+    padding:clamp(18px,3vw,42px);
+}
+
+.weather-track{
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:200%;
+    height:100%;
+
+    display:flex;
+    flex-direction:row;
+
+    min-width:0;
+
+    transform:translate3d(0,0,0);
+
+    transition:
+        transform .45s cubic-bezier(.22,.61,.36,1);
+
+    will-change:transform;
+}
+
+.weather-page{
+    width:50%;
+    min-width:50%;
+    max-width:50%;
+
+    flex:0 0 50%;
+    flex-shrink:0;
+
+    height:100%;
+    min-height:0;
+
+    box-sizing:border-box;
+
+    padding:clamp(18px,3vw,42px);
+
+    overflow:hidden;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+}
+
+.weather-title{
+    width:100%;
+    max-width:100%;
+
+    margin:0 0 18px 0;
+
+    font-size:clamp(16px,2vw,28px);
+    font-weight:800;
+
+    color:#999;
+
+    white-space:normal;
+    word-break:break-all;
+    overflow-wrap:break-word;
+
+    overflow:hidden;
+}
+
+.temperature{
+    width:100%;
+    max-width:100%;
+
+    font-size:clamp(45px,7vw,100px);
+
+    line-height:1;
+
+    font-weight:800;
+
+    color:#fff;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    font-variant-numeric:tabular-nums;
+}
+
+.weather-icon{
+    width:100%;
+    max-width:100%;
+
+    margin:18px 0;
+
+    font-size:clamp(40px,6vw,85px);
+
+    line-height:1;
+
+    overflow:hidden;
+}
+
+.weather-description{
+    width:100%;
+    max-width:100%;
+
+    font-size:clamp(17px,2vw,28px);
+
+    font-weight:700;
+
+    color:#eee;
+
+    white-space:normal;
+    word-break:break-all;
+    overflow-wrap:break-word;
+
+    overflow:hidden;
+}
+
+.weather-details{
+    width:100%;
+    max-width:100%;
+
+    margin-top:16px;
+
+    display:grid;
+
+    grid-template-columns:repeat(2,minmax(0,1fr));
+
+    gap:10px;
+
+    overflow:hidden;
+}
+
+.weather-detail{
+    min-width:0;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    background:#171717;
+
+    overflow:hidden;
+}
+
+.weather-detail-label{
+    width:100%;
+    max-width:100%;
+
+    font-size:clamp(10px,1vw,14px);
+
+    color:#777;
+
+    white-space:normal;
+    word-break:break-all;
+    overflow-wrap:break-word;
+}
+
+.weather-detail-value{
+    width:100%;
+    max-width:100%;
+
+    margin-top:4px;
+
+    font-size:clamp(15px,1.5vw,22px);
+
+    font-weight:700;
+
+    color:#fff;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
+/* ================================
+   FORECAST
+================================ */
+
+.forecast-list{
+    width:100%;
+    max-width:100%;
+
+    min-height:0;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:8px;
+
+    overflow:hidden;
+}
+
+.forecast-row{
+    width:100%;
+    min-width:0;
+
+    display:grid;
+
+    grid-template-columns:
+        minmax(55px,.8fr)
+        minmax(45px,.6fr)
+        minmax(65px,.9fr)
+        minmax(75px,1fr);
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:9px 10px;
+
+    border-radius:10px;
+
+    background:#151515;
+
+    overflow:hidden;
+}
+
+.forecast-row > div{
+    min-width:0;
+    max-width:100%;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+    text-overflow:ellipsis;
+}
+
+.forecast-day{
+    font-weight:700;
+}
+
+.forecast-icon{
+    font-size:clamp(18px,2vw,30px);
+    text-align:center;
+}
+
+.forecast-temp{
+    font-size:clamp(12px,1.4vw,20px);
+}
+
+.forecast-rain{
+    color:#999;
+    font-size:clamp(10px,1.1vw,16px);
+}
+
+/* ================================
+   HINT
+================================ */
+
+.swipe-hint{
+    position:absolute;
+
+    left:50%;
+    bottom:10px;
+
+    transform:translateX(-50%);
+
+    z-index:20;
+
+    max-width:calc(100% - 30px);
+
+    padding:5px 10px;
+
+    border-radius:999px;
+
+    background:rgba(0,0,0,.45);
+
+    color:#777;
+
+    font-size:clamp(9px,.9vw,13px);
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    pointer-events:none;
+}
+
+.loading{
+    width:100%;
+    max-width:100%;
+
+    color:#777;
+
+    font-size:clamp(13px,1.4vw,20px);
+
+    white-space:normal;
+
+    word-break:break-all;
+    overflow-wrap:break-word;
+
+    overflow:hidden;
+}
+
+/* ================================
+   MOBILE
+================================ */
+
+@media(max-width:768px){
+
+    html,
+    body{
+        overflow:auto;
+    }
+
+    .app{
+        height:auto;
+        min-height:100vh;
+
+        flex-direction:column;
+
+        overflow:visible;
+    }
+
+    .left-panel{
+        width:100%;
+        max-width:100%;
+
+        flex:0 0 auto;
+
+        height:38vh;
+        min-height:250px;
+
+        padding:25px;
+    }
+
+    .right-panel{
+        width:100%;
+        max-width:100%;
+
+        flex:0 0 auto;
+
+        height:62vh;
+        min-height:450px;
+
+        padding:10px;
+    }
+
+    .clock{
+        font-size:clamp(35px,14vw,75px);
+    }
+
+    .news-title{
+        font-size:clamp(21px,6vw,34px);
+    }
+
+    .news-description{
+        font-size:clamp(14px,4vw,20px);
+    }
+
+    .news-image-wrap{
+        height:24vh;
+        min-height:100px;
+    }
+}
+
+@media(max-width:400px){
+
+    .left-panel{
+        height:35vh;
+    }
+
+    .right-panel{
+        height:65vh;
+    }
+
+    .news-screen,
+    .weather-screen{
+        padding:14px;
+    }
+
+    .news-card{
+        padding:18px;
+    }
+
+    .news-image-wrap{
+        height:22vh;
+        min-height:90px;
+    }
+
+    .weather-page{
+        padding:18px;
+    }
+
+    .forecast-row{
+        gap:4px;
+        padding:7px;
+    }
+}
+
+::-webkit-scrollbar{
+    display:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- ==========================================
+         LEFT 40%
+    =========================================== -->
+
+    <section class="left-panel">
+
+        <div id="clock" class="clock">
+            --:--:--
+        </div>
+
+        <div id="date" class="date">
+            ----年--月--日
+        </div>
+
+        <div class="location">
+            愛知県長久手市
+        </div>
+
+    </section>
+
+
+    <!-- ==========================================
+         RIGHT 60%
+    =========================================== -->
+
+    <section class="right-panel">
+
+        <div id="earthquakeAlert"
+             class="earthquake-alert">
+        </div>
+
+
+        <div id="commonPanel"
+             class="common-panel">
+
+            <div id="verticalTrack"
+                 class="vertical-track">
+
+
+                <!-- ======================================
+                     NEWS
+                ======================================= -->
+
+                <section class="screen news-screen">
+
+                    <div class="section-title">
+                        本日の主要ニュース
+                    </div>
+
+
+                    <div id="newsCarousel"
+                         class="news-carousel">
+
+                        <div id="newsTrack"
+                             class="news-track">
+                        </div>
+
+                    </div>
+
+
+                    <div id="newsCounter"
+                         class="news-counter">
+                        1 / 1
+                    </div>
+
+
+                    <div class="swipe-hint">
+                        ← → ニュース　　↑ 天気
+                    </div>
+
+                </section>
+
+
+                <!-- ======================================
+                     WEATHER
+                ======================================= -->
+
+                <section class="screen weather-screen">
+
+                    <div id="weatherTrack"
+                         class="weather-track">
+
+
+                        <!-- CURRENT -->
+
+                        <div class="weather-page">
+
+                            <div class="weather-title">
+                                愛知県長久手市　現在の天気
+                            </div>
+
+                            <div id="currentTemperature"
+                                 class="temperature">
+                                --
+                            </div>
+
+                            <div id="currentWeatherIcon"
+                                 class="weather-icon">
+                                ☁️
+                            </div>
+
+                            <div id="currentWeatherDescription"
+                                 class="weather-description">
+                                天気を取得中...
+                            </div>
+
+                            <div class="weather-details">
+
+                                <div class="weather-detail">
+
+                                    <div class="weather-detail-label">
+                                        体感温度
+                                    </div>
+
+                                    <div id="apparentTemperature"
+                                         class="weather-detail-value">
+                                        --
+                                    </div>
+
+                                </div>
+
+                                <div class="weather-detail">
+
+                                    <div class="weather-detail-label">
+                                        湿度
+                                    </div>
+
+                                    <div id="humidity"
+                                         class="weather-detail-value">
+                                        --
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- WEEKLY -->
+
+                        <div class="weather-page">
+
+                            <div class="weather-title">
+                                愛知県長久手市　7日間予報
+                            </div>
+
+                            <div id="forecastList"
+                                 class="forecast-list">
+
+                                <div class="loading">
+                                    週間天気を取得中...
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="swipe-hint">
+                        ← 現在　　週間 →　　↓ ニュース
+                    </div>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+"use strict";
+
+
+/* =====================================================
+   LOCATION
+===================================================== */
+
+const LOCATION = {
+
+    name:"愛知県長久手市",
+
+    latitude:35.18,
+
+    longitude:137.05
+
+};
+
+
+/* =====================================================
+   TEST EARTHQUAKE
+===================================================== */
+
+const testEarthquake = false;
+
+
+/* =====================================================
+   DOM
+===================================================== */
+
+const clockElement =
+    document.getElementById("clock");
+
+const dateElement =
+    document.getElementById("date");
+
+const verticalTrack =
+    document.getElementById("verticalTrack");
+
+const commonPanel =
+    document.getElementById("commonPanel");
+
+const newsTrack =
+    document.getElementById("newsTrack");
+
+const newsCounter =
+    document.getElementById("newsCounter");
+
+const weatherTrack =
+    document.getElementById("weatherTrack");
+
+const earthquakeAlert =
+    document.getElementById("earthquakeAlert");
+
+const currentTemperature =
+    document.getElementById("currentTemperature");
+
+const currentWeatherIcon =
+    document.getElementById("currentWeatherIcon");
+
+const currentWeatherDescription =
+    document.getElementById("currentWeatherDescription");
+
+const apparentTemperature =
+    document.getElementById("apparentTemperature");
+
+const humidity =
+    document.getElementById("humidity");
+
+const forecastList =
+    document.getElementById("forecastList");
+
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let currentVerticalScreen = 0;
+
+let currentNewsIndex = 0;
+
+let currentWeatherPage = 0;
+
+let newsItems = [];
+
+
+/* =====================================================
+   CLOCK
+===================================================== */
+
+function updateClock(){
+
+    const now = new Date();
+
+    const hours =
+        String(now.getHours())
+        .padStart(2,"0");
+
+    const minutes =
+        String(now.getMinutes())
+        .padStart(2,"0");
+
+    const seconds =
+        String(now.getSeconds())
+        .padStart(2,"0");
+
+    clockElement.textContent =
+        `${hours}:${minutes}:${seconds}`;
+
+
+    const year =
+        now.getFullYear();
+
+    const month =
+        String(now.getMonth()+1)
+        .padStart(2,"0");
+
+    const day =
+        String(now.getDate())
+        .padStart(2,"0");
+
+    const weekdays = [
+        "日","月","火","水","木","金","土"
+    ];
+
+    dateElement.textContent =
+        `${year}年${month}月${day}日（${weekdays[now.getDay()]}）`;
+}
+
+updateClock();
+
+setInterval(
+    updateClock,
+    1000
+);
+
+
+/* =====================================================
+   FALLBACK NEWS
+   ★画像は入れない
+   ★画像なしなら完全非表示
+===================================================== */
+
+const fallbackNews = [
+
+    {
+        title:"本日の主要ニュースをお知らせします",
+        description:"ニュース配信サービスに接続できない場合でも、ダッシュボードが停止しないように表示用の情報を用意しています。",
+        date:"本日のニュース",
+        image:null
+    },
+
+    {
+        title:"国内の最新情報を確認してください",
+        description:"最新のニュースについては、各報道機関の公式情報もあわせてご確認ください。",
+        date:"本日のニュース",
+        image:null
+    },
+
+    {
+        title:"天気や防災に関する最新情報",
+        description:"気象情報や防災情報は状況によって更新されます。必要に応じて最新情報を確認してください。",
+        date:"本日の情報",
+        image:null
+    },
+
+    {
+        title:"地域のニュースをお知らせします",
+        description:"愛知県長久手市周辺の情報についても、最新の自治体・報道機関の情報をご確認ください。",
+        date:"地域情報",
+        image:null
+    },
+
+    {
+        title:"交通情報・生活情報を確認",
+        description:"お出かけの際は交通状況や公共交通機関の運行情報などを確認してください。",
+        date:"生活情報",
+        image:null
+    },
+
+    {
+        title:"ニュース表示システムは正常に動作しています",
+        description:"ニュース取得に失敗した場合でも、画面のカルーセル操作と天気表示はそのまま利用できます。",
+        date:"システム情報",
+        image:null
+    }
+
+];
+
+
+/* =====================================================
+   NEWS FETCH
+===================================================== */
+
+async function fetchNews(){
+
+    const rssUrl =
+        "https://www.nhk.or.jp/rss/news/cat0.xml";
+
+
+    const proxyUrls = [
+
+        "https://api.rss2json.com/v1/api.json?rss_url="
+        + encodeURIComponent(rssUrl),
+
+        "https://corsproxy.io/?"
+        + encodeURIComponent(rssUrl),
+
+        "https://api.allorigins.win/raw?url="
+        + encodeURIComponent(rssUrl)
+
+    ];
+
+
+    for(
+        const url of proxyUrls
+    ){
+
+        try{
+
+            const controller =
+                new AbortController();
+
+            const timeout =
+                setTimeout(
+                    () => controller.abort(),
+                    10000
+                );
+
+
+            const response =
+                await fetch(
+                    url,
+                    {
+                        method:"GET",
+                        cache:"no-store",
+                        signal:controller.signal
+                    }
+                );
+
+
+            clearTimeout(timeout);
+
+
+            if(!response.ok){
+
+                continue;
+
+            }
+
+
+            /* RSS2JSON */
+
+            if(
+                url.includes("rss2json.com")
+            ){
+
+                const data =
+                    await response.json();
+
+
+                if(
+                    data &&
+                    Array.isArray(data.items) &&
+                    data.items.length
+                ){
+
+                    const parsed =
+                        data.items
+                        .slice(0,10)
+                        .map(
+                            parseJSONNewsItem
+                        )
+                        .filter(
+                            item => item.title
+                        );
+
+
+                    if(parsed.length){
+
+                        newsItems = parsed;
+
+                        renderNews();
+
+                        return;
+
+                    }
+
+                }
+
+            }
+
+
+            /* XML RSS */
+
+            else{
+
+                const xmlText =
+                    await response.text();
+
+
+                const parsed =
+                    parseRSS(xmlText);
+
+
+                if(parsed.length){
+
+                    newsItems = parsed;
+
+                    renderNews();
+
+                    return;
+
+                }
+
+            }
+
+        }
+        catch(error){
+
+            console.warn(
+                "ニュース取得失敗",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* 全失敗 */
+
+    newsItems =
+        fallbackNews.slice();
+
+    renderNews();
+
+}
+
+
+/* =====================================================
+   JSON NEWS
+===================================================== */
+
+function parseJSONNewsItem(item){
+
+    let image = null;
+
+
+    /*
+      thumbnail
+    */
+
+    if(
+        item &&
+        typeof item.thumbnail === "string" &&
+        item.thumbnail.trim()
+    ){
+
+        image =
+            item.thumbnail.trim();
+
+    }
+
+
+    /*
+      enclosure
+    */
+
+    if(
+        !image &&
+        item &&
+        item.enclosure
+    ){
+
+        if(
+            typeof item.enclosure === "string"
+        ){
+
+            image =
+                item.enclosure;
+
+        }
+        else if(
+            item.enclosure.link
+        ){
+
+            image =
+                item.enclosure.link;
+
+        }
+        else if(
+            item.enclosure.url
+        ){
+
+            image =
+                item.enclosure.url;
+
+        }
+
+    }
+
+
+    /*
+      media
+    */
+
+    if(
+        !image &&
+        item &&
+        item.media_content
+    ){
+
+        if(
+            typeof item.media_content === "string"
+        ){
+
+            image =
+                item.media_content;
+
+        }
+        else if(
+            item.media_content.url
+        ){
+
+            image =
+                item.media_content.url;
+
+        }
+
+    }
+
+
+    /*
+      HTML中の画像
+    */
+
+    if(
+        !image &&
+        item
+    ){
+
+        image =
+            extractImageFromHTML(
+                item.content ||
+                item.description ||
+                ""
+            );
+
+    }
+
+
+    return {
+
+        title:
+            item.title || "ニュース",
+
+        description:
+            stripHtml(
+                item.description ||
+                item.content ||
+                ""
+            ),
+
+        date:
+            formatNewsDate(
+                item.pubDate
+            ),
+
+        image:
+            normalizeImageURL(image)
+
+    };
+
+}
+
+
+/* =====================================================
+   RSS PARSER
+===================================================== */
+
+function parseRSS(xmlText){
+
+    try{
+
+        const parser =
+            new DOMParser();
+
+        const xml =
+            parser.parseFromString(
+                xmlText,
+                "text/xml"
+            );
+
+
+        const items =
+            Array.from(
+                xml.querySelectorAll("item")
+            );
+
+
+        return items
+            .slice(0,10)
+            .map(parseRSSItem)
+            .filter(
+                item => item.title
+            );
+
+    }
+    catch(error){
+
+        console.error(
+            "RSS解析エラー",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+
+/* =====================================================
+   RSS ITEM
+   ★複数画像パターン対応
+===================================================== */
+
+function parseRSSItem(item){
+
+    const title =
+        item.querySelector("title")
+        ?.textContent
+        ?.trim()
+        || "ニュース";
+
+
+    const description =
+        item.querySelector("description")
+        ?.textContent
+        ?.trim()
+        || "";
+
+
+    const pubDate =
+        item.querySelector("pubDate")
+        ?.textContent
+        ?.trim()
+        || "";
+
+
+    let image = null;
+
+
+    /*
+      ① enclosure
+    */
+
+    const enclosure =
+        item.querySelector("enclosure");
+
+
+    if(
+        enclosure
+    ){
+
+        const url =
+            enclosure.getAttribute("url");
+
+        const type =
+            (
+                enclosure.getAttribute("type")
+                || ""
+            ).toLowerCase();
+
+
+        if(
+            url &&
+            (
+                type.startsWith("image/")
+                ||
+                isProbablyImageURL(url)
+            )
+        ){
+
+            image = url;
+
+        }
+
+    }
+
+
+    /*
+      ② media:content
+    */
+
+    if(!image){
+
+        const mediaContents =
+            Array.from(
+                item.getElementsByTagName(
+                    "media:content"
+                )
+            );
+
+
+        for(
+            const media of mediaContents
+        ){
+
+            const url =
+                media.getAttribute("url");
+
+
+            const type =
+                (
+                    media.getAttribute("type")
+                    || ""
+                ).toLowerCase();
+
+
+            if(
+                url &&
+                (
+                    type.startsWith("image/")
+                    ||
+                    isProbablyImageURL(url)
+                )
+            ){
+
+                image = url;
+
+                break;
+
+            }
+
+        }
+
+    }
+
+
+    /*
+      ③ media:thumbnail
+    */
+
+    if(!image){
+
+        const thumbnails =
+            Array.from(
+                item.getElementsByTagName(
+                    "media:thumbnail"
+                )
+            );
+
+
+        for(
+            const thumb of thumbnails
+        ){
+
+            const url =
+                thumb.getAttribute("url");
+
+
+            if(url){
+
+                image = url;
+
+                break;
+
+            }
+
+        }
+
+    }
+
+
+    /*
+      ④ imageタグ
+    */
+
+    if(!image){
+
+        const imageElements =
+            Array.from(
+                item.getElementsByTagName("image")
+            );
+
+
+        for(
+            const imageElement of imageElements
+        ){
+
+            const url =
+                imageElement.textContent
+                ?.trim();
+
+
+            if(url){
+
+                image = url;
+
+                break;
+
+            }
+
+        }
+
+    }
+
+
+    /*
+      ⑤ 本文内<img>
+    */
+
+    if(!image){
+
+        image =
+            extractImageFromHTML(
+                description
+            );
+
+    }
+
+
+    /*
+      ⑥ description以外のcontent
+    */
+
+    if(!image){
+
+        const encoded =
+            item.getElementsByTagName(
+                "content:encoded"
+            )[0];
+
+
+        if(encoded){
+
+            image =
+                extractImageFromHTML(
+                    encoded.textContent || ""
+                );
+
+        }
+
+    }
+
+
+    return {
+
+        title:title,
+
+        description:
+            stripHtml(description),
+
+        date:
+            formatNewsDate(pubDate),
+
+        image:
+            normalizeImageURL(image)
+
+    };
+
+}
+
+
+/* =====================================================
+   EXTRACT IMAGE FROM HTML
+===================================================== */
+
+function extractImageFromHTML(html){
+
+    if(
+        !html ||
+        typeof html !== "string"
+    ){
+
+        return null;
+
+    }
+
+
+    const temp =
+        document.createElement("div");
+
+
+    temp.innerHTML = html;
+
+
+    /*
+      src
+    */
+
+    const img =
+        temp.querySelector("img");
+
+
+    if(
+        img &&
+        img.getAttribute("src")
+    ){
+
+        return img.getAttribute("src");
+
+    }
+
+
+    /*
+      data-src
+      lazy load対応
+    */
+
+    if(
+        img &&
+        img.getAttribute("data-src")
+    ){
+
+        return img.getAttribute("data-src");
+
+    }
+
+
+    /*
+      srcset
+    */
+
+    if(
+        img &&
+        img.getAttribute("srcset")
+    ){
+
+        const srcset =
+            img.getAttribute("srcset")
+            .split(",");
+
+
+        if(srcset.length){
+
+            return srcset[0]
+                .trim()
+                .split(/\s+/)[0];
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =====================================================
+   IMAGE URL CHECK
+===================================================== */
+
+function isProbablyImageURL(url){
+
+    if(
+        !url ||
+        typeof url !== "string"
+    ){
+
+        return false;
+
+    }
+
+
+    return /\.(jpg|jpeg|png|gif|webp|avif|bmp)(\?.*)?$/i
+        .test(url);
+
+}
+
+
+/* =====================================================
+   NORMALIZE IMAGE URL
+===================================================== */
+
+function normalizeImageURL(url){
+
+    if(
+        !url ||
+        typeof url !== "string"
+    ){
+
+        return null;
+
+    }
+
+
+    let result =
+        url.trim();
+
+
+    if(
+        result.startsWith("//")
+    ){
+
+        result =
+            "https:" + result;
+
+    }
+
+
+    if(
+        result.startsWith("http://") ||
+        result.startsWith("https://")
+    ){
+
+        return result;
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =====================================================
+   STRIP HTML
+===================================================== */
+
+function stripHtml(value){
+
+    const temp =
+        document.createElement("div");
+
+
+    temp.innerHTML =
+        value || "";
+
+
+    return (
+        temp.textContent ||
+        temp.innerText ||
+        ""
+    )
+    .replace(/\s+/g," ")
+    .trim();
+
+}
+
+
+/* =====================================================
+   DATE
+===================================================== */
+
+function formatNewsDate(value){
+
+    if(!value){
+
+        return "ニュース";
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if(
+        Number.isNaN(
+            date.getTime()
+        )
+    ){
+
+        return value;
+
+    }
+
+
+    return date.toLocaleString(
+        "ja-JP",
+        {
+            month:"numeric",
+            day:"numeric",
+            hour:"2-digit",
+            minute:"2-digit"
+        }
+    );
+
+}
+
+
+/* =====================================================
+   NEWS RENDER
+   ★重要修正版
+===================================================== */
+
+function renderNews(){
+
+    if(
+        !Array.isArray(newsItems) ||
+        !newsItems.length
+    ){
+
+        newsItems =
+            fallbackNews.slice();
+
+    }
+
+
+    currentNewsIndex = 0;
+
+
+    /*
+      Track幅
+    */
+
+    newsTrack.style.width =
+        `${newsItems.length * 100}%`;
+
+
+    newsTrack.innerHTML = "";
+
+
+    newsItems.forEach(
+        (item) => {
+
+            /*
+              CARD
+            */
+
+            const card =
+                document.createElement("article");
+
+
+            card.className =
+                "news-card";
+
+
+            const cardWidth =
+                100 / newsItems.length;
+
+
+            card.style.width =
+                `${cardWidth}%`;
+
+            card.style.minWidth =
+                `${cardWidth}%`;
+
+            card.style.maxWidth =
+                `${cardWidth}%`;
+
+            card.style.flex =
+                `0 0 ${cardWidth}%`;
+
+
+            /*
+              IMAGE AREA
+            */
+
+            const imageWrap =
+                document.createElement("div");
+
+
+            imageWrap.className =
+                "news-image-wrap";
+
+
+            /*
+              TEXT AREA
+            */
+
+            const textArea =
+                document.createElement("div");
+
+
+            textArea.className =
+                "news-text-area";
+
+
+            /*
+              TITLE
+            */
+
+            const title =
+                document.createElement("h2");
+
+
+            title.className =
+                "news-title";
+
+
+            title.textContent =
+                item.title ||
+                "ニュース";
+
+
+            /*
+              DESCRIPTION
+            */
+
+            const description =
+                document.createElement("div");
+
+
+            description.className =
+                "news-description";
+
+
+            description.textContent =
+                item.description ||
+                "本文情報はありません。";
+
+
+            /*
+              DATE
+            */
+
+            const date =
+                document.createElement("div");
+
+
+            date.className =
+                "news-date";
+
+
+            date.textContent =
+                item.date ||
+                "ニュース";
+
+
+            /*
+              =========================================
+              IMAGE HANDLING
+              =========================================
+            */
+
+            const imageURL =
+                normalizeImageURL(
+                    item.image
+                );
+
+
+            if(!imageURL){
+
+                /*
+                  URLなし
+                  → 画像エリア完全消去
+                */
+
+                imageWrap.classList.add(
+                    "image-hidden"
+                );
+
+            }
+            else{
+
+                const image =
+                    document.createElement("img");
+
+
+                image.className =
+                    "news-image";
+
+
+                image.alt =
+                    "";
+
+
+                image.loading =
+                    "lazy";
+
+
+                image.decoding =
+                    "async";
+
+
+                /*
+                  読み込み成功
+                */
+
+                image.onload =
+                    () => {
+
+                        /*
+                          念のため表示
+                        */
+
+                        imageWrap.classList.remove(
+                            "image-hidden"
+                        );
+
+                    };
+
+
+                /*
+                  読み込み失敗
+                  ★プレースホルダー禁止
+                */
+
+                image.onerror =
+                    () => {
+
+                        image.remove();
+
+                        imageWrap.classList.add(
+                            "image-hidden"
+                        );
+
+                    };
+
+
+                image.src =
+                    imageURL;
+
+
+                imageWrap.appendChild(
+                    image
+                );
+
+            }
+
+
+            /*
+              TEXT AREA
+            */
+
+            textArea.appendChild(
+                title
+            );
+
+            textArea.appendChild(
+                description
+            );
+
+            textArea.appendChild(
+                date
+            );
+
+
+            /*
+              CARD
+              画像とテキストは
+              完全に独立したFlex要素
+            */
+
+            card.appendChild(
+                imageWrap
+            );
+
+            card.appendChild(
+                textArea
+            );
+
+
+            newsTrack.appendChild(
+                card
+            );
+
+        }
+    );
+
+
+    updateNewsPosition();
+
+}
+
+
+/* =====================================================
+   NEWS POSITION
+===================================================== */
+
+function updateNewsPosition(){
+
+    if(!newsItems.length){
+
+        return;
+
+    }
+
+
+    /*
+      1記事ずつ正確に移動
+    */
+
+    const percentage =
+        (
+            currentNewsIndex *
+            100 /
+            newsItems.length
+        );
+
+
+    newsTrack.style.transform =
+        `translate3d(-${percentage}%,0,0)`;
+
+
+    newsCounter.textContent =
+        `${currentNewsIndex+1} / ${newsItems.length}`;
+
+}
+
+
+/* =====================================================
+   NEXT
+===================================================== */
+
+function nextNews(){
+
+    if(
+        newsItems.length <= 1
+    ){
+
+        return;
+
+    }
+
+
+    currentNewsIndex =
+        (
+            currentNewsIndex + 1
+        )
+        % newsItems.length;
+
+
+    updateNewsPosition();
+
+}
+
+
+/* =====================================================
+   PREVIOUS
+===================================================== */
+
+function previousNews(){
+
+    if(
+        newsItems.length <= 1
+    ){
+
+        return;
+
+    }
+
+
+    currentNewsIndex =
+        (
+            currentNewsIndex - 1 +
+            newsItems.length
+        )
+        % newsItems.length;
+
+
+    updateNewsPosition();
+
+}
+
+
+/* =====================================================
+   WEATHER MAP
+===================================================== */
+
+const weatherCodeMap = {
+
+    0:{text:"快晴",icon:"☀️"},
+    1:{text:"晴れ",icon:"🌤️"},
+    2:{text:"晴れ時々くもり",icon:"⛅"},
+    3:{text:"くもり",icon:"☁️"},
+    45:{text:"霧",icon:"🌫️"},
+    48:{text:"霧",icon:"🌫️"},
+    51:{text:"弱い霧雨",icon:"🌦️"},
+    53:{text:"霧雨",icon:"🌦️"},
+    55:{text:"強い霧雨",icon:"🌧️"},
+    61:{text:"弱い雨",icon:"🌦️"},
+    63:{text:"雨",icon:"🌧️"},
+    65:{text:"強い雨",icon:"🌧️"},
+    71:{text:"弱い雪",icon:"🌨️"},
+    73:{text:"雪",icon:"🌨️"},
+    75:{text:"強い雪",icon:"❄️"},
+    80:{text:"にわか雨",icon:"🌦️"},
+    81:{text:"雨",icon:"🌧️"},
+    82:{text:"激しい雨",icon:"⛈️"},
+    95:{text:"雷雨",icon:"⛈️"},
+    96:{text:"雷雨・ひょう",icon:"⛈️"},
+    99:{text:"激しい雷雨",icon:"⛈️"}
+
+};
+
+
+/* =====================================================
+   WEATHER
+===================================================== */
+
+async function fetchWeather(){
+
+    const url =
+        "https://api.open-meteo.com/v1/forecast"
+        + "?latitude="
+        + LOCATION.latitude
+        + "&longitude="
+        + LOCATION.longitude
+        + "&current="
+        + "temperature_2m,"
+        + "apparent_temperature,"
+        + "relative_humidity_2m,"
+        + "weather_code"
+        + "&daily="
+        + "weather_code,"
+        + "temperature_2m_max,"
+        + "temperature_2m_min,"
+        + "precipitation_probability_max"
+        + "&timezone=Asia%2FTokyo"
+        + "&forecast_days=7";
+
+
+    try{
+
+        const response =
+            await fetch(
+                url,
+                {
+                    cache:"no-store"
+                }
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "Weather HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        renderCurrentWeather(data);
+
+        renderForecast(data);
+
+    }
+    catch(error){
+
+        console.error(
+            "天気取得エラー",
+            error
+        );
+
+
+        currentTemperature.textContent =
+            "--°";
+
+        currentWeatherDescription.textContent =
+            "天気情報を取得できません";
+
+        forecastList.innerHTML =
+            '<div class="loading">'
+            + '週間天気を取得できませんでした'
+            + '</div>';
+
+    }
+
+}
+
+
+/* =====================================================
+   CURRENT WEATHER
+===================================================== */
+
+function renderCurrentWeather(data){
+
+    const current =
+        data.current;
+
+
+    const info =
+        weatherCodeMap[
+            Number(
+                current.weather_code
+            )
+        ]
+        ||
+        {
+            text:"天気情報",
+            icon:"🌤️"
+        };
+
+
+    currentTemperature.textContent =
+        `${Math.round(
+            current.temperature_2m
+        )}°C`;
+
+
+    currentWeatherIcon.textContent =
+        info.icon;
+
+
+    currentWeatherDescription.textContent =
+        info.text;
+
+
+    apparentTemperature.textContent =
+        `${Math.round(
+            current.apparent_temperature
+        )}°C`;
+
+
+    humidity.textContent =
+        `${Math.round(
+            current.relative_humidity_2m
+        )}%`;
+
+}
+
+
+/* =====================================================
+   WEEKDAY
+===================================================== */
+
+function getJapaneseDay(dateString){
+
+    const date =
+        new Date(
+            dateString + "T00:00:00"
+        );
+
+
+    const days = [
+        "日","月","火","水","木","金","土"
+    ];
+
+
+    return days[
+        date.getDay()
+    ];
+
+}
+
+
+/* =====================================================
+   FORECAST
+===================================================== */
+
+function renderForecast(data){
+
+    const daily =
+        data.daily;
+
+
+    forecastList.innerHTML = "";
+
+
+    for(
+        let i=0;
+        i<daily.time.length;
+        i++
+    ){
+
+        const code =
+            Number(
+                daily.weather_code[i]
+            );
+
+
+        const info =
+            weatherCodeMap[code]
+            ||
+            {
+                text:"天気",
+                icon:"🌤️"
+            };
+
+
+        const row =
+            document.createElement("div");
+
+
+        row.className =
+            "forecast-row";
+
+
+        const day =
+            document.createElement("div");
+
+
+        day.className =
+            "forecast-day";
+
+
+        day.textContent =
+            i === 0
+            ? "今日"
+            : getJapaneseDay(
+                daily.time[i]
+            );
+
+
+        const icon =
+            document.createElement("div");
+
+
+        icon.className =
+            "forecast-icon";
+
+
+        icon.textContent =
+            info.icon;
+
+
+        const temp =
+            document.createElement("div");
+
+
+        temp.className =
+            "forecast-temp";
+
+
+        temp.textContent =
+            `${Math.round(
+                daily.temperature_2m_min[i]
+            )}° / ${Math.round(
+                daily.temperature_2m_max[i]
+            )}°`;
+
+
+        const rain =
+            document.createElement("div");
+
+
+        rain.className =
+            "forecast-rain";
+
+
+        rain.textContent =
+            `降水 ${
+                daily.precipitation_probability_max[i]
+                ?? 0
+            }%`;
+
+
+        row.appendChild(day);
+
+        row.appendChild(icon);
+
+        row.appendChild(temp);
+
+        row.appendChild(rain);
+
+
+        forecastList.appendChild(row);
+
+    }
+
+}
+
+
+/* =====================================================
+   WEATHER PAGE
+===================================================== */
+
+function showCurrentWeather(){
+
+    currentWeatherPage = 0;
+
+    weatherTrack.style.transform =
+        "translate3d(0,0,0)";
+
+}
+
+
+function showWeeklyWeather(){
+
+    currentWeatherPage = 1;
+
+    weatherTrack.style.transform =
+        "translate3d(-50%,0,0)";
+
+}
+
+
+/* =====================================================
+   VERTICAL
+===================================================== */
+
+function showNews(){
+
+    currentVerticalScreen = 0;
+
+    verticalTrack.style.transform =
+        "translate3d(0,0,0)";
+
+}
+
+
+function showWeather(){
+
+    currentVerticalScreen = 1;
+
+    verticalTrack.style.transform =
+        "translate3d(0,-50%,0)";
+
+}
+
+
+/* =====================================================
+   EARTHQUAKE
+===================================================== */
+
+const quakeUrl =
+    "https://api.p2pquake.net/v2/jma/quake?limit=5";
+
+
+function scaleText(scale){
+
+    const map = {
+        10:"1",
+        20:"2",
+        30:"3",
+        40:"4",
+        45:"5弱",
+        50:"5強",
+        55:"6弱",
+        60:"6強",
+        70:"7"
+    };
+
+
+    return map[scale] || "不明";
+
+}
+
+
+async function fetchEarthquake(){
+
+    if(testEarthquake){
+
+        showEarthquake(
+            "⚠ 地震情報テスト　最大震度3"
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                quakeUrl,
+                {
+                    cache:"no-store"
+                }
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "Earthquake HTTP " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        if(
+            !Array.isArray(data) ||
+            !data.length
+        ){
+
+            hideEarthquake();
+
+            return;
+
+        }
+
+
+        let strongest = 0;
+
+        let strongestEvent = null;
+
+
+        for(
+            const item of data
+        ){
+
+            const scale =
+                Number(
+                    item
+                    ?.earthquake
+                    ?.maxScale
+                );
+
+
+            if(
+                Number.isFinite(scale) &&
+                scale > strongest
+            ){
+
+                strongest = scale;
+
+                strongestEvent = item;
+
+            }
+
+        }
+
+
+        if(
+            strongest >= 30 &&
+            strongestEvent
+        ){
+
+            const hypocenter =
+                strongestEvent
+                ?.earthquake
+                ?.hypocenter
+                ?.name
+                ||
+                "震源情報";
+
+
+            showEarthquake(
+                `⚠ 地震情報　最大震度 ${scaleText(
+                    strongest
+                )}　${hypocenter}`
+            );
+
+        }
+        else{
+
+            hideEarthquake();
+
+        }
+
+    }
+    catch(error){
+
+        console.warn(
+            "地震情報取得エラー",
+            error
+        );
+
+    }
+
+}
+
+
+function showEarthquake(message){
+
+    earthquakeAlert.textContent =
+        message;
+
+    earthquakeAlert.classList.add(
+        "show"
+    );
+
+}
+
+
+function hideEarthquake(){
+
+    earthquakeAlert.classList.remove(
+        "show"
+    );
+
+}
+
+
+/* =====================================================
+   TOUCH
+===================================================== */
+
+let touchStartX = 0;
+let touchStartY = 0;
+
+
+commonPanel.addEventListener(
+    "touchstart",
+    event => {
+
+        if(
+            !event.touches ||
+            !event.touches.length
+        ){
+
+            return;
+
+        }
+
+
+        touchStartX =
+            event.touches[0].clientX;
+
+        touchStartY =
+            event.touches[0].clientY;
+
+    },
+    {passive:true}
+);
+
+
+commonPanel.addEventListener(
+    "touchend",
+    event => {
+
+        if(
+            !event.changedTouches ||
+            !event.changedTouches.length
+        ){
+
+            return;
+
+        }
+
+
+        const dx =
+            event.changedTouches[0].clientX
+            - touchStartX;
+
+
+        const dy =
+            event.changedTouches[0].clientY
+            - touchStartY;
+
+
+        const absX =
+            Math.abs(dx);
+
+        const absY =
+            Math.abs(dy);
+
+        const threshold = 45;
+
+
+        if(
+            absY > absX &&
+            absY >= threshold
+        ){
+
+            if(dy < 0){
+
+                showWeather();
+
+            }
+            else{
+
+                showNews();
+
+            }
+
+            return;
+
+        }
+
+
+        if(
+            absX > absY &&
+            absX >= threshold
+        ){
+
+            if(
+                currentVerticalScreen === 0
+            ){
+
+                if(dx < 0){
+
+                    nextNews();
+
+                }
+                else{
+
+                    previousNews();
+
+                }
+
+            }
+            else{
+
+                if(dx < 0){
+
+                    showWeeklyWeather();
+
+                }
+                else{
+
+                    showCurrentWeather();
+
+                }
+
+            }
+
+        }
+
+    },
+    {passive:true}
+);
+
+
+/* =====================================================
+   MOUSE SWIPE
+===================================================== */
+
+let mouseDown = false;
+let mouseStartX = 0;
+let mouseStartY = 0;
+
+
+commonPanel.addEventListener(
+    "mousedown",
+    event => {
+
+        mouseDown = true;
+
+        mouseStartX =
+            event.clientX;
+
+        mouseStartY =
+            event.clientY;
+
+    }
+);
+
+
+window.addEventListener(
+    "mouseup",
+    event => {
+
+        if(!mouseDown){
+
+            return;
+
+        }
+
+
+        mouseDown = false;
+
+
+        const dx =
+            event.clientX - mouseStartX;
+
+        const dy =
+            event.clientY - mouseStartY;
+
+
+        const absX =
+            Math.abs(dx);
+
+        const absY =
+            Math.abs(dy);
+
+
+        const threshold = 45;
+
+
+        if(
+            absY > absX &&
+            absY >= threshold
+        ){
+
+            if(dy < 0){
+
+                showWeather();
+
+            }
+            else{
+
+                showNews();
+
+            }
+
+            return;
+
+        }
+
+
+        if(
+            absX > absY &&
+            absX >= threshold
+        ){
+
+            if(
+                currentVerticalScreen === 0
+            ){
+
+                if(dx < 0){
+
+                    nextNews();
+
+                }
+                else{
+
+                    previousNews();
+
+                }
+
+            }
+            else{
+
+                if(dx < 0){
+
+                    showWeeklyWeather();
+
+                }
+                else{
+
+                    showCurrentWeather();
+
+                }
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   AUTO NEWS
+===================================================== */
+
+setInterval(
+    () => {
+
+        if(
+            currentVerticalScreen === 0 &&
+            newsItems.length > 1
+        ){
+
+            nextNews();
+
+        }
+
+    },
+    8000
+);
+
+
+/* =====================================================
+   INITIAL
+===================================================== */
+
+fetchNews();
+
+fetchWeather();
+
+fetchEarthquake();
+
+
+/* =====================================================
+   AUTO REFRESH
+===================================================== */
+
+setInterval(
+    fetchNews,
+    5 * 60 * 1000
+);
+
+setInterval(
+    fetchWeather,
+    10 * 60 * 1000
+);
+
+setInterval(
+    fetchEarthquake,
+    60 * 1000
+);
+
+</script>
+
+</body>
+</html>
